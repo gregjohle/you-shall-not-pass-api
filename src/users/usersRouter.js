@@ -6,29 +6,47 @@ const express = require("express"),
   jsonParser = express.json(),
   bcrypt = require("bcryptjs");
 
-UsersRouter.route("/")
-  .get((req, res, next) => {
-    UsersService.getByEmail(req.app.get("db"), req.body.email)
-      .then((user) => {})
-      .catch(next);
-  })
-  .post((req, res, next) => {
-    const { name, email, password } = req.body;
-    const hashedPassword = await bcrypt.hash(req.body.password, process.env.SALT);
-    const newUser = { name, email, hashedPassword };
-    UsersService.getByEmail(req.app.get("db"), req.body.email)
-      .then((user) =>{
-        if (user) {
-          res.send("A User already exists with that email.")
-        }
-        if (!user) {
-          UsersService.insertUser(req.app.get("db"), newUser)
-          .then((res) => {
-            res.send("user added")
-          })
-          .catch(next)
-        }
-      })
+function hashThePassword(password) {
+  async (res, doc) => {
+    await bcrypt.hash(password, 10);
+  };
+}
 
-    UsersService.insertUser(req.app.get("db"), newUser)
+UsersRouter.route("/login").post((req, res, next) => {
+  UsersService.getByEmail(req.app.get("db"), req.body.email)
+    .then((user) => {
+      if (user === undefined) {
+        res.send("Invalid User");
+      }
+      if (bcrypt.compareSync(req.body.password, user.password) === false) {
+        res.send("Invalid Password");
+      }
+      if (bcrypt.compareSync(req.body.password, user.password) === true) {
+        res.send("logged in");
+      }
+    })
+    .catch(next);
+});
+// Route to add a new user to the site
+UsersRouter.route("/register").post((req, res, next) => {
+  const { name, email, password } = req.body;
+  UsersService.getByEmail(req.app.get("db"), req.body.email).then((user) => {
+    if (user) {
+      res.send("A User already exists with that email.");
+    }
+    if (!user) {
+      const hashedPassword = bcrypt.hashSync(req.body.password, 10);
+      const newUser = {
+        name: req.body.name,
+        email: req.body.email,
+        password: hashedPassword,
+      };
+      console.log(newUser);
+      UsersService.insertUser(req.app.get("db"), newUser)
+        .then(res.send("user added"))
+        .catch(next);
+    }
   });
+});
+
+module.exports = UsersRouter;

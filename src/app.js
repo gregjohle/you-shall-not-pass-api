@@ -10,6 +10,7 @@ const bcrypt = require("bcryptjs");
 const session = require("express-sessions");
 const bodyParser = require("body-parser");
 const { NODE_ENV } = require("./config");
+const UsersRouter = require("./users/usersRouter");
 
 const app = express();
 
@@ -26,18 +27,18 @@ app.use(
   })
 );
 
-app.use(
-  session({
-    secret: process.env.SECRET,
-    resave: true,
-    saveUninitialized: true,
-  })
-);
+// app.use(
+//   session({
+//     secret: process.env.SECRET,
+//     resave: true,
+//     saveUninitialized: true,
+//   })
+// );
 
 app.use(cookieParser(process.env.SECRET));
 
-app.use("/api/users", usersRouter);
-app.use("/api/passwords", passwordsRouter);
+app.use("/api/users", UsersRouter);
+// app.use("/api/passwords", passwordsRouter);
 
 // app.get("/", (req, res) => {
 //   res.send("Hello, world!");
