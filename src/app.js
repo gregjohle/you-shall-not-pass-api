@@ -7,12 +7,32 @@ const passport = require("passport");
 const passportLocal = require("passport-local").Strategy;
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
-const session = require("express-sessions");
+const session = require("express-session");
 const bodyParser = require("body-parser");
 const { NODE_ENV } = require("./config");
 const UsersRouter = require("./users/usersRouter");
+const initializePassport = require("./passport-config");
+const UsersService = require("./users/usersService");
+const flash = require("express-flash");
 
 const app = express();
+
+initializePassport(
+  passport,
+  (email) => UsersService.getByEmail("db", email),
+  (id) => UsersService.getByID("db", id)
+);
+
+app.use(express.urlencoded({ extended: false }));
+app.use(flash());
+const sessionOptions = {
+  secret: process.env.SECRET,
+  resave: false,
+  saveUninitialized: false,
+};
+app.use(session(sessionOptions));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -26,14 +46,6 @@ app.use(
     credentials: true,
   })
 );
-
-// app.use(
-//   session({
-//     secret: process.env.SECRET,
-//     resave: true,
-//     saveUninitialized: true,
-//   })
-// );
 
 app.use(cookieParser(process.env.SECRET));
 

@@ -1,4 +1,8 @@
 const UsersService = {
+  getAllUsers(knex) {
+    return knex.from("users").select("*");
+  },
+
   insertUser(knex, newUser) {
     return knex
       .insert(newUser)
@@ -11,6 +15,10 @@ const UsersService = {
 
   getByEmail(knex, email) {
     return knex.from("users").select("*").where({ email }).first();
+  },
+
+  getByID(knex, id) {
+    return knex.from("users").select("*").where({ id }).first();
   },
 
   deleteUser(knex, id) {
