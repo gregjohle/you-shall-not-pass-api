@@ -1,3 +1,6 @@
+const knex = require("knex");
+const db = require("../database");
+
 const UsersService = {
   getAllUsers(knex) {
     return knex.from("users").select("*");
@@ -14,7 +17,7 @@ const UsersService = {
   },
 
   getByEmail(knex, email) {
-    return knex.from("users").select("*").where({ email }).first();
+    return knex(db).from("users").select("*").where({ email }).first();
   },
 
   getByID(knex, id) {
