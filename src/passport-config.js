@@ -8,12 +8,12 @@ const database = require("knex")(configuration); // connect to DB via knex using
 module.exports = function initialize(passport) {
   const authenticateUser = async (email, password, done) => {
     const user = await UsersService.getByEmail(database, email);
-    console.log(user);
     if (user === undefined) {
       return done(null, false, { message: "No User Found With That Email" });
     }
     try {
       if (await bcrypt.compareSync(password, user.password)) {
+        console.log(user);
         return done(null, user);
       } else {
         return done(null, false, { message: "Incorrect Password" });

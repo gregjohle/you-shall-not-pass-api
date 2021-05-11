@@ -17,11 +17,7 @@ const flash = require("express-flash");
 
 const app = express();
 
-initializePassport(
-  passport,
-  (email) => UsersService.getByEmail("db", email),
-  (id) => UsersService.getByID("db", id)
-);
+initializePassport(passport);
 
 app.use(express.urlencoded({ extended: false }));
 app.use(flash());
@@ -37,7 +33,7 @@ app.use(passport.session());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const morganOption = NODE_ENV === "production" ? "tiny" : "common";
+const morganOption = NODE_ENV === "production" ? "tiny" : "dev";
 
 app.use(morgan(morganOption));
 app.use(helmet());
@@ -51,10 +47,6 @@ app.use(cookieParser(process.env.SECRET));
 
 app.use("/api/users", UsersRouter);
 // app.use("/api/passwords", passwordsRouter);
-
-// app.get("/", (req, res) => {
-//   res.send("Hello, world!");
-// });
 
 app.use(function errorHandler(error, req, res, next) {
   let response;

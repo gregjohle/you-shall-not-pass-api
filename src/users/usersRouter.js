@@ -1,4 +1,5 @@
 const passport = require("passport");
+const jwtToken = require("passport-jwt");
 
 const express = require("express"),
   path = require("path"),
@@ -8,27 +9,19 @@ const express = require("express"),
   jsonParser = express.json(),
   bcrypt = require("bcryptjs");
 
-UsersRouter.route("/login").post(
-  passport.authenticate("local", {
-    failureFlash: true,
-  })
-);
+UsersRouter.route("/login").post((req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.json({ error: "Invalid user or pass" });
+    }
 
-// req, res, next;
+    return res.json({ jwtToken: process.env.SECRET });
+  })(req, res, next);
+});
 
-// UsersService.getByEmail(req.app.get("db"), req.body.email)
-//   .then((user) => {
-//     if (user === undefined) {
-//       res.send("Invalid User");
-//     }
-//     if (bcrypt.compareSync(req.body.password, user.password) === false) {
-//       res.send("Invalid Password");
-//     }
-//     if (bcrypt.compareSync(req.body.password, user.password) === true) {
-//       res.send("logged in");
-//     }
-//   })
-//   .catch(next);
 // Route to add a new user to the site
 UsersRouter.route("/register").post((req, res, next) => {
   const { name, email, password } = req.body;
