@@ -39,8 +39,8 @@ UsersRouter.route("/register").post((req, res, next) => {
     if (!user) {
       const hashedPassword = bcrypt.hashSync(req.body.password, 10);
       const newUser = {
-        name: req.body.name,
-        email: req.body.email,
+        name: xss(req.body.name),
+        email: xss(req.body.email),
         password: hashedPassword,
       };
       console.log(newUser);
