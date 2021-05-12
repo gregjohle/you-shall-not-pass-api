@@ -11,6 +11,7 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const { NODE_ENV } = require("./config");
 const UsersRouter = require("./users/usersRouter");
+const PasswordsRouter = require("./passwords/passwordsRouter");
 const initializePassport = require("./passport-config");
 const UsersService = require("./users/usersService");
 const flash = require("express-flash");
@@ -47,7 +48,7 @@ app.use(
 app.use(cookieParser(process.env.SECRET));
 
 app.use("/api/users", UsersRouter);
-// app.use("/api/passwords", passwordsRouter);
+app.use("/api/passwords", PasswordsRouter);
 
 app.use(function errorHandler(error, req, res, next) {
   let response;
