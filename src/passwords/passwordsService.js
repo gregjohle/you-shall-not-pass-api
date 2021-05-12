@@ -1,8 +1,8 @@
 const xss = require("xss");
 
 const PasswordsService = {
-  getAllPasswords(knex) {
-    return knex.from("passwords").select("*");
+  getAllPasswords(knex, user_id) {
+    return knex.from("passwords").select("*").where({ user_id });
   },
   insertPassword(knex, newPassword) {
     return knex
@@ -12,9 +12,6 @@ const PasswordsService = {
       .then((rows) => {
         return rows[0];
       });
-  },
-  getById(knex, id) {
-    return knex("notes").select("*").where({ id }).first();
   },
   deletePassword(knex, id) {
     return knex("passwords").where({ id }).delete();

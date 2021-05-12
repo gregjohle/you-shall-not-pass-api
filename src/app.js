@@ -25,6 +25,7 @@ const sessionOptions = {
   secret: process.env.SECRET,
   resave: false,
   saveUninitialized: false,
+  cookie: { maxAge: 1000 * 60 * 60 * 24 },
 };
 app.use(session(sessionOptions));
 app.use(passport.initialize());
