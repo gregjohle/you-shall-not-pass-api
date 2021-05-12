@@ -9,7 +9,17 @@ const Cryptr = require("cryptr");
 const cryptr = new Cryptr(process.env.SECRET);
 const passport = require("passport");
 
-PasswordsRouter.route("/passwords")
+PasswordsRouter.route(
+  "/passwords",
+  passport.authenticate(),
+  async (req, res) => {
+    const userPasswords = await PasswordsService.getAllPasswords(
+      req.app.get("db"),
+      req.user.id
+    );
+    return res.json({ userPasswords });
+  }
+)
   .get((req, res) => {
     const user = passport.deserializeUser(req.sessionID, done);
 
