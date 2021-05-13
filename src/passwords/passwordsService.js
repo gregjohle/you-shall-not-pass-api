@@ -1,11 +1,14 @@
 const xss = require("xss");
+const environment = process.env.NODE_ENV || "development";
+const configuration = require("../database")[environment];
+const database = require("knex")(configuration);
 
 const PasswordsService = {
   getAllPasswords(knex, user_id) {
-    return knex.from("passwords").select("*").where({ user_id });
+    return database.from("passwords").select("*").where({ user_id });
   },
   insertPassword(knex, newPassword) {
-    return knex
+    return database
       .into("passwords")
       .insert(newPassword)
       .returning("*")
@@ -14,10 +17,10 @@ const PasswordsService = {
       });
   },
   deletePassword(knex, id) {
-    return knex("passwords").where({ id }).delete();
+    return database("passwords").where({ id }).delete();
   },
   updatePassword(knex, id, newPasswordFields) {
-    return knex("notes").where({ id }).update(newPasswordFields);
+    return database("notes").where({ id }).update(newPasswordFields);
   },
 };
 

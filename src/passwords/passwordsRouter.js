@@ -9,42 +9,45 @@ const Cryptr = require("cryptr");
 const cryptr = new Cryptr(process.env.SECRET);
 const passport = require("passport");
 
-PasswordsRouter.route(
-  "/passwords",
-  passport.authenticate(),
-  async (req, res) => {
-    const userPasswords = await PasswordsService.getAllPasswords(
-      req.app.get("db"),
-      req.user.id
-    );
-    return res.json({ userPasswords });
-  }
-)
-  .get((req, res) => {
-    const user = passport.deserializeUser(req.sessionID, done);
+const decryptPassword = (password) => ({
+  id: password.id,
+  site: password.site,
+  username: password.username,
+  password: cryptr.decrypt(password.password),
+});
 
-    PasswordsService.getAllPasswords(req.app.get("db"), user.id).then(
-      (passwords) => {
-        return res.json({ passwords });
-      }
-    );
+PasswordsRouter.route("/")
+  .get((req, res) => {
+    if (req.isAuthenticated()) {
+      let id = req.session.passport.user.id;
+      PasswordsService.getAllPasswords(req.app.get("db"), id).then(
+        (passwords) => {
+          res.json(passwords.map(decryptPassword));
+        }
+      );
+    } else {
+      res.status(401).send("Unauthorized");
+    }
   })
   .post((req, res) => {
-    const name = xss(req.body.name);
-    const site = xss(req.body.site);
-    const password = crpytr.encrypt(req.body.password);
-    const userId = "1";
+    if (req.isAuthenticated()) {
+      const username = xss(req.body.username);
+      const site = xss(req.body.site);
+      const password = cryptr.encrypt(req.body.password);
+      const userId = req.session.passport.user.id;
 
-    const newPassword = {
-      name: name,
-      site: site,
-      password: password,
-      user_id: userId,
-    };
-    console.log(newPassword);
-    PasswordsService.insertPassword(req.app.get("db"), newPassword).then(
-      res.status(200).send("password added")
-    );
+      const newPassword = {
+        username: username,
+        site: site,
+        password: password,
+        user_id: userId,
+      };
+
+      console.log(newPassword);
+      PasswordsService.insertPassword(req.app.get("db"), newPassword).then(
+        res.status(200).send("password added")
+      );
+    } else res.status(401).send("Unauthorized");
   });
 
 module.exports = PasswordsRouter;

@@ -29,7 +29,17 @@ UsersRouter.route("/login")
       });
     })(req, res, next);
   })
-  .get((req, res) => {});
+  .get((req, res) => {
+    if (req.isAuthenticated()) {
+      let user = {
+        id: req.session.passport.user.id,
+        name: req.session.passport.user.name,
+      };
+      res.status(200).json(user);
+    } else {
+      res.status(401).send("Unauthorized");
+    }
+  });
 
 // Route to add a new user to the site
 UsersRouter.route("/register").post((req, res, next) => {
@@ -47,7 +57,7 @@ UsersRouter.route("/register").post((req, res, next) => {
       };
       console.log(newUser);
       UsersService.insertUser(req.app.get("db"), newUser)
-        .then(res.send("user added"))
+        .then(res.status(201).send("user added"))
         .catch(next);
     }
   });
