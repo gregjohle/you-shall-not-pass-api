@@ -12,7 +12,6 @@
     "predeploy": "npm audit",
     "deploy": "git push heroku main",
     "postdeploy": "npm run migrate:production"
-    
   },
   "keywords": [],
   "author": "Greg Johle <greg.johle@gmail.com>",
@@ -33,7 +32,7 @@
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
-    "pg": "^8.6.0",
+    "pg": "^7.12.1",
     "postgrator-cli": "^3.1.0",
     "uuid": "^8.3.2",
     "xss": "^1.0.8"
