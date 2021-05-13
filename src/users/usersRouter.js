@@ -8,38 +8,38 @@ const express = require("express"),
   jsonParser = express.json(),
   bcrypt = require("bcryptjs");
 
-UsersRouter.route("/login")
-  .post((req, res, next) => {
-    passport.authenticate("local", (err, user, info) => {
+UsersRouter.route("/login").get((req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.json({ error: "Invalid user or pass" });
+    }
+
+    return req.login(user, function (err) {
       if (err) {
         return next(err);
       }
-      if (!user) {
-        return res.json({ error: "Invalid user or pass" });
-      }
-
-      return req.login(user, function (err) {
-        if (err) {
-          return next(err);
-        }
-        return res.json({
-          name: user.name,
-          id: user.id,
-        });
+      return res.json({
+        name: user.name,
+        id: user.id,
       });
-    })(req, res, next);
-  })
-  .get((req, res) => {
-    if (req.isAuthenticated()) {
-      let user = {
-        id: req.session.passport.user.id,
-        name: req.session.passport.user.name,
-      };
-      res.status(200).json(user);
-    } else {
-      res.status(401).send("Unauthorized");
-    }
-  });
+    });
+  })(req, res, next);
+});
+
+UsersRouter.route("/").get((req, res) => {
+  if (req.isAuthenticated()) {
+    let user = {
+      id: req.session.passport.user.id,
+      name: req.session.passport.user.name,
+    };
+    res.status(200).json(user);
+  } else {
+    res.status(401).send("Unauthorized");
+  }
+});
 
 // Route to add a new user to the site
 UsersRouter.route("/register").post((req, res, next) => {
