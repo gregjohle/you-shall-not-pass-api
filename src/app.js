@@ -30,7 +30,7 @@ const sessionOptions = {
 };
 app.use(session(sessionOptions));
 app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.session(sessionOptions));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -39,7 +39,11 @@ const morganOption = NODE_ENV === "production" ? "tiny" : "dev";
 
 app.use(morgan(morganOption));
 app.use(helmet());
-app.use(cors());
+var corsOptions = {
+  origin: true,
+  credentials: true,
+};
+app.use(cors(corsOptions));
 
 app.use(cookieParser(process.env.SECRET));
 

@@ -8,7 +8,7 @@ const express = require("express"),
   jsonParser = express.json(),
   bcrypt = require("bcryptjs");
 
-UsersRouter.route("/login").get((req, res, next) => {
+UsersRouter.route("/login").post((req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
     if (err) {
       return next(err);
@@ -29,11 +29,16 @@ UsersRouter.route("/login").get((req, res, next) => {
   })(req, res, next);
 });
 
+UsersRouter.route("/logout").get((req, res, next) => {
+  req.logout();
+  return res.status(200).send("Logged Out Successfully.");
+});
+
 UsersRouter.route("/").get((req, res) => {
   if (req.isAuthenticated()) {
     let user = {
-      id: req.session.passport.user.id,
       name: req.session.passport.user.name,
+      id: req.session.passport.user.id,
     };
     res.status(200).json(user);
   } else {
