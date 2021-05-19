@@ -9,60 +9,45 @@ const express = require("express"),
   bcrypt = require("bcryptjs");
 
 UsersRouter.route("/login").post((req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      return res.json({ error: "Invalid user or pass" });
-    }
-
-    return req.login(user, function (err) {
-      if (err) {
-        return next(err);
-      }
-      return res.json({
+  let { email, password } = req.body;
+  UsersService.getByEmail(email).then((user) => {
+    if (user === undefined) {
+      return res.status(404).send("No User found.");
+    } else if (bcrypt.compareSync(password, user.password)) {
+      return res.status(200).json({
         name: user.name,
+        email: user.email,
         id: user.id,
       });
-    });
-  })(req, res, next);
-});
-
-UsersRouter.route("/logout").get((req, res, next) => {
-  req.logout();
-  return res.status(200).send("Logged Out Successfully.");
-});
-
-UsersRouter.route("/").get((req, res) => {
-  if (req.isAuthenticated()) {
-    let user = {
-      name: req.session.passport.user.name,
-      id: req.session.passport.user.id,
-    };
-    res.status(200).json(user);
-  } else {
-    res.status(401).send("Unauthorized");
-  }
+    } else {
+      return res.status(401).send("Invalid Password");
+    }
+  });
 });
 
 // Route to add a new user to the site
 UsersRouter.route("/register").post((req, res, next) => {
   const { name, email, password } = req.body;
-  UsersService.getByEmail(req.app.get("db"), req.body.email).then((user) => {
+  UsersService.getByEmail(email).then((user) => {
     if (user) {
       res.send("A User already exists with that email.");
     }
     if (!user) {
-      const hashedPassword = bcrypt.hashSync(req.body.password, 10);
+      const hashedPassword = bcrypt.hashSync(password, 10);
       const newUser = {
-        name: xss(req.body.name),
-        email: xss(req.body.email),
+        name: xss(name),
+        email: xss(email),
         password: hashedPassword,
       };
       console.log(newUser);
-      UsersService.insertUser(req.app.get("db"), newUser)
-        .then(res.status(201).send("user added"))
+      UsersService.insertUser(newUser)
+        .then(UsersService.getByEmail(email))
+        .then((user) => {
+          if (user === undefined) {
+            return res.send("user not created");
+          }
+          return res.status(201).send("user added");
+        })
         .catch(next);
     }
   });
