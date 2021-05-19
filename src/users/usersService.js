@@ -1,7 +1,7 @@
-const environment = process.env.NODE_ENV || "development"; // if something else isn't setting ENV, use development
+const environment = process.env.NODE_ENV || "development";
 const bcrypt = require("bcryptjs");
-const configuration = require("../database")[environment]; // require environment's settings from knexfile
-const database = require("knex")(configuration); // connect to DB via knex using env's settings
+const configuration = require("../database")[environment];
+const database = require("knex")(configuration);
 
 const UsersService = {
   getAllUsers() {

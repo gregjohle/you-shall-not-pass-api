@@ -40,7 +40,6 @@ PasswordsRouter.route("/add").post((req, res) => {
     user_id: userId,
   };
 
-  console.log(newPassword);
   PasswordsService.insertPassword(req.app.get("db"), newPassword).then(
     res.status(200).send("password added")
   );
