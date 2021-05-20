@@ -8,6 +8,7 @@ const express = require("express"),
 
 // route to login a specific user
 UsersRouter.route("/login").post((req, res, next) => {
+  console.log(req.body);
   let { email, password } = req.body;
   UsersService.getByEmail(email).then((user) => {
     if (user === undefined) {
