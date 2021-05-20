@@ -19,7 +19,7 @@ const UsersService = {
   },
 
   getByEmail(knex, email) {
-    return knex("users").select("*").where({ email }).first();
+    return knex.from("users").select("*").where({ email }).first();
   },
 
   getByID(knex, id) {
