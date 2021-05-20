@@ -18,9 +18,10 @@ const decryptPassword = (password) => ({
 });
 
 PasswordsRouter.route("/").post((req, res) => {
+  console.log(req.body);
   let { user_id } = req.body;
   if (user_id === undefined) {
-    return res.status(200).send("No id, fool.");
+    return res.status(200).json("No id, fool.");
   }
   PasswordsService.getAllPasswords(user_id).then((passwords) => {
     res.json(passwords.map(decryptPassword));
