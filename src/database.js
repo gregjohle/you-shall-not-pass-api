@@ -11,14 +11,6 @@ module.exports = {
     useNullAsDefault: true,
   },
 
-  test: {
-    client: "pg",
-    connection: TEST_DATABASE_URL,
-    migrations: {
-      directory: "./migrations",
-    },
-    useNullAsDefault: true,
-  },
   production: {
     client: "pg",
     connection: {
