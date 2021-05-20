@@ -10,6 +10,7 @@ const cryptr = new Cryptr(process.env.SECRET);
 const UsersService = require("../users/usersService");
 const bcrypt = require("bcryptjs");
 
+// template for decrpyting passwords before being sent to the client
 const decryptPassword = (password) => ({
   id: password.id,
   site: password.site,
@@ -17,8 +18,8 @@ const decryptPassword = (password) => ({
   password: cryptr.decrypt(password.password),
 });
 
+// route to get all passwords for a specific user
 PasswordsRouter.route("/").post((req, res) => {
-  console.log(req.body);
   let { user_id } = req.body;
   if (user_id === undefined) {
     return res.status(200).json("No id, fool.");
@@ -28,6 +29,7 @@ PasswordsRouter.route("/").post((req, res) => {
   });
 });
 
+//route to add a password
 PasswordsRouter.route("/add").post((req, res) => {
   const username = xss(req.body.newPassword.username);
   const site = xss(req.body.newPassword.site);

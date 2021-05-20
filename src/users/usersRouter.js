@@ -8,6 +8,7 @@ const express = require("express"),
   jsonParser = express.json(),
   bcrypt = require("bcryptjs");
 
+// route to login a specific user
 UsersRouter.route("/login").post((req, res, next) => {
   let { email, password } = req.body;
   UsersService.getByEmail(email).then((user) => {
