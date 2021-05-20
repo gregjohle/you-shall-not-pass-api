@@ -9,7 +9,7 @@ const express = require("express"),
 // route to login a specific user
 UsersRouter.route("/login").post((req, res, next) => {
   let { email, password } = req.body;
-  UsersService.getByEmail(email).then((user) => {
+  UsersService.getByEmail(req.app.get("db"), email).then((user) => {
     console.log(user);
     if (user === undefined) {
       return res.status(404).send("No User found.");
@@ -28,7 +28,7 @@ UsersRouter.route("/login").post((req, res, next) => {
 // Route to add a new user to the site
 UsersRouter.route("/register").post((req, res, next) => {
   const { name, email, password } = req.body;
-  UsersService.getByEmail(email).then((user) => {
+  UsersService.getByEmail(req.app.get("db"), email).then((user) => {
     if (user) {
       res.send("A User already exists with that email.");
     }
@@ -40,8 +40,8 @@ UsersRouter.route("/register").post((req, res, next) => {
         password: hashedPassword,
       };
       console.log(newUser);
-      UsersService.insertUser(newUser)
-        .then(UsersService.getByEmail(email))
+      UsersService.insertUser(req.app.get("db"), newUser)
+        .then(UsersService.getByEmail(req.app.get("db"), email))
         .then((user) => {
           if (user === undefined) {
             return res.send("user not created");

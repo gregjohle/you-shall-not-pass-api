@@ -1,15 +1,15 @@
 const environment = process.env.NODE_ENV || "development";
 const bcrypt = require("bcryptjs");
-const configuration = require("../database")[environment];
-const database = require("knex")(configuration);
+// const configuration = require("../database")[environment];
+// const database = require("knex")(configuration);
 
 const UsersService = {
   getAllUsers() {
     return database.from("users").select("*");
   },
 
-  insertUser(newUser) {
-    return database
+  insertUser(knex, newUser) {
+    return knex
       .insert(newUser)
       .into("users")
       .returning("*")
@@ -18,20 +18,20 @@ const UsersService = {
       });
   },
 
-  getByEmail(email) {
-    return database.from("users").select("*").where({ email }).first();
+  getByEmail(knex, email) {
+    return knex.from("users").select("*").where({ email }).first();
   },
 
-  getByID(id) {
-    return database.from("users").select("*").where({ id }).first();
+  getByID(knex, id) {
+    return knex.from("users").select("*").where({ id }).first();
   },
 
-  deleteUser(id) {
-    return database.from("users").delete(id);
+  deleteUser(knex, id) {
+    return knex.from("users").delete(id);
   },
 
-  updateUser(id, newUserFields) {
-    return database("users").where({ id }).update(newUserFields);
+  updateUser(knex, id, newUserFields) {
+    return knex("users").where({ id }).update(newUserFields);
   },
 };
 
