@@ -19,7 +19,7 @@ const UsersService = {
   },
 
   getByEmail(email) {
-    console.log(process.env.NODE_ENV);
+    console.log(email);
     return database.from("users").select("*").where({ email }).first();
   },
 
