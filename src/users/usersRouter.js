@@ -8,9 +8,9 @@ const express = require("express"),
 
 // route to login a specific user
 UsersRouter.route("/login").post((req, res, next) => {
-  console.log(req.body);
   let { email, password } = req.body;
   UsersService.getByEmail(email).then((user) => {
+    console.log(user);
     if (user === undefined) {
       return res.status(404).send("No User found.");
     } else if (bcrypt.compareSync(password, user.password)) {
