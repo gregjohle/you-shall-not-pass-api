@@ -3,6 +3,7 @@ const app = require("./app");
 
 const { PORT } = require("./config");
 
+// one knex instance to rule them all
 const db = knex({
   client: "pg",
   connection: {
