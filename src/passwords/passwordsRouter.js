@@ -46,7 +46,9 @@ PasswordsRouter.route("/add").post((req, res) => {
   };
 
   PasswordsService.insertPassword(req.app.get("db"), newPassword).then(
-    res.status(200).send("password added")
+    (password) => {
+      res.status(200).json({ password });
+    }
   );
 });
 
