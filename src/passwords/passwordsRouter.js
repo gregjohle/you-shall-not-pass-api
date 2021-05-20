@@ -36,7 +36,8 @@ PasswordsRouter.route("/add").post((req, res) => {
   console.log(req.body.newPassword);
   const username = xss(req.body.newPassword.username);
   const site = xss(req.body.newPassword.site);
-  const password = cryptr.encrypt(req.body.newPassword.password);
+  const password = async () =>
+    await cryptr.encrypt(req.body.newPassword.password);
   const userId = req.body.newPassword.user_id;
 
   const newPassword = {
