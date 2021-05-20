@@ -8,7 +8,7 @@ module.exports = {
     migrations: {
       directory: "../migrations",
     },
-    useNullAsDefault: true,
+    // useNullAsDefault: true,
   },
 
   // production: {
