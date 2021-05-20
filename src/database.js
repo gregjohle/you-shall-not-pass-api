@@ -2,7 +2,7 @@ module.exports = {
   development: {
     client: "pg",
     connection: {
-      connectionString: process.env.DATABASE_URL,
+      connectionString: DATABASE_URL,
       ssl: true,
     },
     migrations: {
@@ -13,7 +13,7 @@ module.exports = {
 
   test: {
     client: "pg",
-    connection: process.env.TEST_DATABASE_URL,
+    connection: TEST_DATABASE_URL,
     migrations: {
       directory: "./migrations",
     },
@@ -22,7 +22,7 @@ module.exports = {
   production: {
     client: "pg",
     connection: {
-      connectionString: process.env.DATABASE_URL,
+      connectionString: DATABASE_URL,
       ssl: true,
     },
     migrations: {
