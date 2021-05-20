@@ -1,5 +1,3 @@
-const passport = require("passport");
-
 const express = require("express"),
   path = require("path"),
   xss = require("xss"),

@@ -7,7 +7,6 @@ const bodyParser = require("body-parser");
 const { NODE_ENV } = require("./config");
 const UsersRouter = require("./users/usersRouter");
 const PasswordsRouter = require("./passwords/passwordsRouter");
-const initializePassport = require("./passport-config");
 
 const app = express();
 
