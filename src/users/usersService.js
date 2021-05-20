@@ -19,15 +19,7 @@ const UsersService = {
   },
 
   getByEmail(email) {
-    console.log(configuration);
     return database.from("users").select("*").where({ email }).first();
-  },
-
-  validateUSer(userPass, password) {
-    if (bcrypt.compareSync(password, userPass)) {
-      return true;
-    }
-    return false;
   },
 
   getByID(id) {
