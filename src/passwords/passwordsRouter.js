@@ -24,9 +24,11 @@ PasswordsRouter.route("/").post((req, res) => {
   if (user_id === undefined) {
     return res.status(200).json("No id, fool.");
   }
-  PasswordsService.getAllPasswords(user_id).then((passwords) => {
-    res.json(passwords.map(decryptPassword));
-  });
+  PasswordsService.getAllPasswords(req.app.get("db"), user_id).then(
+    (passwords) => {
+      res.json(passwords.map(decryptPassword));
+    }
+  );
 });
 
 //route to add a password
