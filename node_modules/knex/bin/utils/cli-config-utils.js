@@ -8,9 +8,8 @@ const argv = require('getopts')(process.argv.slice(2));
 
 function mkConfigObj(opts) {
   if (!opts.client) {
-    const path = resolveDefaultKnexfilePath();
     throw new Error(
-      `No default configuration file '${path}' found and no commandline connection parameters passed`
+      `No configuration file found and no commandline connection parameters passed`
     );
   }
 
@@ -29,34 +28,6 @@ function mkConfigObj(opts) {
       },
     },
   };
-}
-
-function resolveKnexFilePath() {
-  const jsPath = resolveDefaultKnexfilePath('js');
-  if (fs.existsSync(jsPath)) {
-    return {
-      path: jsPath,
-      extension: 'js',
-    };
-  }
-
-  const tsPath = resolveDefaultKnexfilePath('ts');
-  if (fs.existsSync(tsPath)) {
-    return {
-      path: tsPath,
-      extension: 'ts',
-    };
-  }
-
-  console.warn(
-    `Failed to find configuration at default location of ${resolveDefaultKnexfilePath(
-      'js'
-    )}`
-  );
-}
-
-function resolveDefaultKnexfilePath(extension) {
-  return process.cwd() + `/knexfile.${extension}`;
 }
 
 function resolveEnvironmentConfig(opts, allConfigs) {
@@ -119,9 +90,23 @@ function getMigrationExtension(env, opts) {
   return ext.toLowerCase();
 }
 
-function getStubPath(env, opts) {
+function getSeedExtension(env, opts) {
   const config = resolveEnvironmentConfig(opts, env.configuration);
-  const stubDirectory = config.migrations && config.migrations.directory;
+
+  let ext = DEFAULT_EXT;
+  if (argv.x) {
+    ext = argv.x;
+  } else if (config.seeds && config.seeds.extension) {
+    ext = config.seeds.extension;
+  } else if (config.ext) {
+    ext = config.ext;
+  }
+  return ext.toLowerCase();
+}
+
+function getStubPath(configKey, env, opts) {
+  const config = resolveEnvironmentConfig(opts, env.configuration);
+  const stubDirectory = config[configKey] && config[configKey].directory;
 
   const { stub } = argv;
   if (!stub) {
@@ -131,10 +116,10 @@ function getStubPath(env, opts) {
     return stub;
   }
 
-  // using stub <name> must have config.migrations.directory defined
+  // using stub <name> must have config[configKey].directory defined
   if (!stubDirectory) {
     console.log(color.red('Failed to load stub'), color.magenta(stub));
-    exit('config.migrations.directory in knexfile must be defined');
+    exit(`config.${configKey}.directory in knexfile must be defined`);
   }
 
   return path.join(stubDirectory, stub);
@@ -142,11 +127,11 @@ function getStubPath(env, opts) {
 
 module.exports = {
   mkConfigObj,
-  resolveKnexFilePath,
   resolveEnvironmentConfig,
   exit,
   success,
   checkLocalModule,
+  getSeedExtension,
   getMigrationExtension,
   getStubPath,
 };
