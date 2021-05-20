@@ -17,11 +17,6 @@ const morganOption = NODE_ENV === "production" ? "tiny" : "dev";
 
 app.use(morgan(morganOption));
 app.use(helmet());
-var corsOptions = {
-  origin: "http://localhost:3000",
-  credentials: true,
-  methods: ["POST", "GET"],
-};
 app.use(cors());
 
 app.use("/api/users", UsersRouter);
