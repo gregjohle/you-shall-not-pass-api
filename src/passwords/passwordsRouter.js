@@ -33,11 +33,11 @@ PasswordsRouter.route("/").post((req, res) => {
 
 //route to add a password
 PasswordsRouter.route("/add").post((req, res) => {
-  console.log(req.body.newPassword);
-  const username = xss(req.body.newPassword.username);
+  console.log(req.body);
+  const username = xss(req.body.username);
   const site = xss(req.body.newPassword.site);
-  const password = cryptr.encrypt(req.body.newPassword.password);
-  const userId = req.body.newPassword.user_id;
+  const password = cryptr.encrypt(req.body.password);
+  const userId = req.body.user_id;
 
   const newPassword = {
     username: username,
