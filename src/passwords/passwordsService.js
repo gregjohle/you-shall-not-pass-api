@@ -19,7 +19,7 @@ const PasswordsService = {
 
   // Delete's a password
   deletePassword(knex, id) {
-    return database("passwords").where({ id }).delete();
+    return knex.from("passwords").where({ id }).delete();
   },
 
   // allows the user to update a password if they change something
