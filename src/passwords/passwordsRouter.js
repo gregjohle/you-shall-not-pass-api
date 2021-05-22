@@ -35,7 +35,7 @@ PasswordsRouter.route("/delete").post((req, res) => {
   let { id } = req.body;
   console.log(id);
   if (id === unefined) {
-    return res.status(400).json({ message: "No ID Supplied" });
+    return res.status(401).json({ message: "No ID Supplied" });
   } else {
     PasswordsService.deletePassword(req.app.get("db"), id).then(() => {
       return res.status(200).json({ message: "Password deleted" });
