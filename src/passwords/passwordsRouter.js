@@ -19,29 +19,29 @@ const decryptPassword = (password) => ({
 });
 
 // route to get all passwords for a specific user
-PasswordsRouter.route("/")
-  .post((req, res) => {
-    let { user_id } = req.body;
-    if (user_id === undefined) {
-      return res.status(200).json("No id, fool.");
+PasswordsRouter.route("/").post((req, res) => {
+  let { user_id } = req.body;
+  if (user_id === undefined) {
+    return res.status(200).json("No id, fool.");
+  }
+  PasswordsService.getAllPasswords(req.app.get("db"), user_id).then(
+    (passwords) => {
+      res.json(passwords.map(decryptPassword));
     }
-    PasswordsService.getAllPasswords(req.app.get("db"), user_id).then(
-      (passwords) => {
-        res.json(passwords.map(decryptPassword));
-      }
-    );
-  })
-  .delete((req, res) => {
-    let { id } = req.body;
-    console.log(id);
-    if (id === unefined) {
-      return res.status(400).json({ message: "No ID Supplied" });
-    } else {
-      PasswordsService.deletePassword(req.app.get("db"), id).then(() => {
-        return res.status(200).json({ message: "Password deleted" });
-      });
-    }
-  });
+  );
+});
+
+PasswordsRouter.route("/delete").post((req, res) => {
+  let { id } = req.body;
+  console.log(id);
+  if (id === unefined) {
+    return res.status(400).json({ message: "No ID Supplied" });
+  } else {
+    PasswordsService.deletePassword(req.app.get("db"), id).then(() => {
+      return res.status(200).json({ message: "Password deleted" });
+    });
+  }
+});
 
 //route to add a password
 PasswordsRouter.route("/add").post((req, res) => {
