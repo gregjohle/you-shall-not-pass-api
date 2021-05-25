@@ -1,26 +1,27 @@
-# Express Boilerplate!
+# You Shall Not Password - API
 
-This is a boilerplate project used for starting new projects!
+This is an API for a new app that helps users to keep track of all their passwords. These passwords are encrypted and stored in the database.
 
-## Set up
+## API Documentation
 
-Complete the following steps to start a new project (NEW-PROJECT-NAME):
+### Endpoints:
 
-1. Clone this repository to your local machine `git clone BOILERPLATE-URL NEW-PROJECTS-NAME`
-2. `cd` into the cloned repository
-3. Make a fresh start of the git history for this project with `rm -rf .git && git init`
-4. Install the node dependencies `npm install`
-5. Move the example Environment file to `.env` that will be ignored by git and read by the express server `mv example.env .env`
-6. Edit the contents of the `package.json` to use NEW-PROJECT-NAME instead of `"name": "express-boilerplate",`
+all endpoints are based upon the url given by Heroku: https://stark-crag-77653.herokuapp.com/
 
-## Scripts
+1. `/users/register` is used to add a new user to the users table. The information must be sent in JSON format, with fields for name, email, password. A phone number is optional. Any user password is hashed and stored to prevent liability from a data breach.
 
-Start the application `npm start`
+2. `/users/login` is used to validate a user email and password. The password supplied is hashed and compared to the stored password. The user name, email address, and id number are supplied in the response.
 
-Start nodemon for the application `npm run dev`
+3. `/passwords/` will return the passwords associated with the supplied user information.
 
-Run the tests `npm test`
+4. `/passwords/add` will add a new password to the password database linked to the current user.
 
-## Deploying
+5. `/passwords/delete` will delete a user password found by the supplied password ID.
 
-When your new project is ready for deployment, add a new Heroku application with `heroku create`. This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's main branch.
+## Technology
+
+Many different technologies were used to create this api. Postgres serves as the database for the storage and retrieval of user information. Node.js and express are the foundation of the server. Knex is used with a postgres driver to query the database. Bcryptjs is used to hash and compare user passwords. Cryptr is used for the encrypted storage and retrieval of passwords.
+
+## Live Demos
+
+The full app can be viewed [here](https://you-shall-not-pass-client.vercel.app/)
