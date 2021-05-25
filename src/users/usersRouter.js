@@ -10,7 +10,6 @@ const express = require("express"),
 UsersRouter.route("/login").post((req, res, next) => {
   let { email, password } = req.body;
   UsersService.getByEmail(req.app.get("db"), email).then((user) => {
-    console.log(user);
     if (user === undefined) {
       return res.status(404).send("No User found.");
     } else if (bcrypt.compareSync(password, user.password)) {
@@ -39,7 +38,6 @@ UsersRouter.route("/register").post((req, res, next) => {
         email: xss(email),
         password: hashedPassword,
       };
-      console.log(newUser);
       UsersService.insertUser(req.app.get("db"), newUser)
         .then(UsersService.getByEmail(req.app.get("db"), email))
         .then((user) => {

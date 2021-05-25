@@ -31,9 +31,9 @@ PasswordsRouter.route("/").post((req, res) => {
   );
 });
 
+// route to delete a password by ID
 PasswordsRouter.route("/delete").post((req, res) => {
   let { id } = req.body;
-  console.log(id);
   if (id === undefined) {
     return res.status(401).json({ message: "No ID Supplied" });
   } else {
@@ -45,7 +45,6 @@ PasswordsRouter.route("/delete").post((req, res) => {
 
 //route to add a password
 PasswordsRouter.route("/add").post((req, res) => {
-  console.log(req.body);
   const username = xss(req.body.username);
   const site = xss(req.body.site);
   const password = cryptr.encrypt(req.body.password);

@@ -19,7 +19,6 @@ const PasswordsService = {
 
   // Delete's a password
   deletePassword(knex, id) {
-    console.log(id);
     return knex.from("passwords").where({ id }).delete();
   },
 
