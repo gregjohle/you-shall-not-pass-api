@@ -115,7 +115,6 @@ describe("Users Endpoints", () => {
         username: testPasswords[0].username,
         site: testPasswords[0].site,
         password: testPasswords[0].password,
-        user_id: testPasswords[0].user_id,
       };
 
       it("adds the password and responds with 200 and password", () => {
@@ -124,11 +123,9 @@ describe("Users Endpoints", () => {
           .send(addedPassword)
           .expect(200)
           .expect((res) => {
-            console.log(res);
-            expect(res.body.username).to.eql(addedPassword.username);
-            expect(res.body.site).to.eql(addedPassword.site);
-            expect(res.body.password).to.eql(addedPassword.password);
-            expect(res.body.user_id).to.eql(addedPassword.user_id);
+            console.log(res.body);
+            expect(res.body.password.username).to.equal(addedPassword.username);
+            expect(res.body.password.site).to.equal(addedPassword.site);
           });
       });
     });
@@ -139,7 +136,6 @@ describe("Users Endpoints", () => {
         username: testPasswords[0].username,
         site: testPasswords[0].site,
         password: testPasswords[0].password,
-        user_id: testPasswords[0].user_id,
       };
 
       return supertest(app)
@@ -150,7 +146,7 @@ describe("Users Endpoints", () => {
 
           supertest(app)
             .post("/api/passwords/delete")
-            .send(passwordInfo.id)
+            .send(passwordInfo.password.id)
             .expect(200);
         });
     });
