@@ -2,6 +2,7 @@ const { expect } = require("chai");
 const knex = require("knex");
 const supertest = require("supertest");
 const app = require("../src/app");
+const bcrypt = require("bcryptjs");
 
 const { makeUsers, makePasswords } = require("./app.fixtures");
 
@@ -17,45 +18,122 @@ describe("Users Endpoints", () => {
 
   after("disconnect from db", () => db.destroy());
 
-  beforeEach("prep tables before each test", () => {
+  before("prep tables before each test", () => {
     db.raw("TRUNCATE users, passwords RESTART IDENTITY CASCADE");
   });
 
-  afterEach("prep tables after each test", () => {
-    db.raw("TRUNCATE users, passwords RESTART IDENTITY CASCADE");
+  afterEach("prep tables after each test", async () => {
+    await db.raw("TRUNCATE users, passwords RESTART IDENTITY CASCADE");
   });
 
   describe("POST api/users/register", () => {
-    it("responds with 201 and user added", () => {
+    context("user not in table", () => {
       const testUser = makeUsers();
-      return supertest(app)
-        .post("/api/users/register")
-        .send(testUser[0])
-        .expect(201, "user added");
+      it("responds with 201 and user added", () => {
+        return supertest(app)
+          .post("/api/users/register")
+          .send(testUser[0])
+          .expect(201, "user added");
+      });
+    });
+
+    context("User exists already", () => {
+      const testUser = makeUsers();
+      const insertUser = {
+        name: testUser[0].name,
+        email: testUser[0].email,
+        password: bcrypt.hashSync("test", 10),
+      };
+
+      before("insert user", async () => {
+        await db.into("users").insert(insertUser);
+      });
+
+      it("responds 200 and user exists", () => {
+        return supertest(app)
+          .post("/api/users/register")
+          .send(testUser[0])
+          .expect(200, "A User already exists with that email.");
+      });
     });
   });
 
   describe("POST /api/users/login", () => {
-    it("responds with user Data", () => {
+    context("user does not exist", () => {
       const testUser = makeUsers();
-      const existingUser = {
+
+      it("responds 404 user not found", () => {
+        return supertest(app)
+          .post("/api/users/login")
+          .send(testUser[0])
+          .expect(404, "No User found.");
+      });
+    });
+
+    context("user exists", () => {
+      const testUser = makeUsers();
+      const insertUser = {
         name: testUser[0].name,
         email: testUser[0].email,
+        password: bcrypt.hashSync("test", 10),
       };
 
-      return supertest(app)
-        .post("/api/users/login")
-        .send(testUser[0])
-        .expect(200)
-        .expect((res) => {
-          expect(res.body.name).to.eql(existingUser.name);
-          expect(res.body.email).to.eql(existingUser.email);
-        });
+      beforeEach("insert user", async () => {
+        await db.into("users").insert(insertUser);
+      });
+
+      it("responds with wrong password", () => {
+        let userInfo = {
+          email: testUser[0].email,
+          password: "Wrong",
+        };
+
+        return supertest(app)
+          .post("/api/users/login")
+          .send(userInfo)
+          .expect(401, "Invalid Password");
+      });
+
+      it("responds with user Data", () => {
+        const existingUser = {
+          password: testUser[0].password,
+          email: testUser[0].email,
+        };
+
+        return supertest(app)
+          .post("/api/users/login")
+          .send(testUser[0])
+          .expect(200);
+      });
     });
   });
 
   describe("POST /api/passwords/add", () => {
-    it("adds the password and responds with 200 and password", () => {
+    context("adds a password to the database", () => {
+      const testPasswords = makePasswords();
+      const addedPassword = {
+        username: testPasswords[0].username,
+        site: testPasswords[0].site,
+        password: testPasswords[0].password,
+        user_id: testPasswords[0].user_id,
+      };
+
+      it("adds the password and responds with 200 and password", () => {
+        return supertest(app)
+          .post("/api/passwords/add")
+          .send(addedPassword)
+          .expect(200)
+          .expect((res) => {
+            console.log(res);
+            expect(res.body.username).to.eql(addedPassword.username);
+            expect(res.body.site).to.eql(addedPassword.site);
+            expect(res.body.password).to.eql(addedPassword.password);
+            expect(res.body.user_id).to.eql(addedPassword.user_id);
+          });
+      });
+    });
+
+    it("it deletes a password", () => {
       const testPasswords = makePasswords();
       const addedPassword = {
         username: testPasswords[0].username,
@@ -66,14 +144,14 @@ describe("Users Endpoints", () => {
 
       return supertest(app)
         .post("/api/passwords/add")
-        .send(testPasswords[0])
-        .expect(200)
-        .expect((res) => {
-          console.log(res);
-          expect(res.body.username).to.eql(addedPassword.username);
-          expect(res.body.site).to.eql(addedPassword.site);
-          expect(res.body.password).to.eql(addedPassword.password);
-          expect(res.body.user_id).to.eql(addedPassword.user_id);
+        .send(addedPassword)
+        .then((res) => {
+          let passwordInfo = res.body;
+
+          supertest(app)
+            .post("/api/passwords/delete")
+            .send(passwordInfo.id)
+            .expect(200);
         });
     });
   });
