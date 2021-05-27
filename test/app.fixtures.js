@@ -19,13 +19,13 @@ function makePasswords() {
       username: "username",
       site: "site",
       password: "password",
-      user_id: "123",
+      user_id: "1a09ae47-b807-476b-85e0-d983548bd36b",
     },
     {
       username: "uname",
       site: "site2",
       password: "password",
-      user_id: "123",
+      user_id: "1a09ae47-b807-476b-85e0-d983548bd36b",
     },
   ];
 }
