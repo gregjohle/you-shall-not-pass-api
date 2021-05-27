@@ -19,13 +19,13 @@ function makePasswords() {
       username: "username",
       site: "site",
       password: "password",
-      user_id: 1,
+      user_id: "123",
     },
     {
       username: "uname",
       site: "site2",
       password: "password",
-      user_id: 1,
+      user_id: "123",
     },
   ];
 }
