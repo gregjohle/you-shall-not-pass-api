@@ -10,7 +10,7 @@ describe("Users Endpoints", () => {
   before("make knex instance to simulate server", () => {
     db = knex({
       client: "pg",
-      connection: process.env.TEST_DATABASE_URL,
+      connection: `postgresql://dunder_mifflin@localhost/you-shall-not-password-test`,
     });
     app.set("db", db);
   });
@@ -22,10 +22,10 @@ describe("Users Endpoints", () => {
   });
 
   describe("POST api/users/register", () => {
-    context("users table is empty, user will be added", () => {
+    it("responds with 201 and user added", () => {
       const testUser = makeUsers();
       return supertest(app)
-        .post("/api/users/register", testUser)
+        .post("http://localhost:8000/api/users/register", testUser[0])
         .expect(201, "user added");
     });
   });
