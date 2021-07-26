@@ -20,7 +20,7 @@ all endpoints are based upon the url given by Heroku: https://stark-crag-77653.h
 
 ## Technology
 
-Many different technologies were used to create this api. Postgres serves as the database for the storage and retrieval of user information. Node.js and express are the foundation of the server. Knex is used with a postgres driver to query the database. Bcryptjs is used to hash and compare user passwords. Cryptr is used for the encrypted storage and retrieval of passwords.
+Many different technologies were used to create this api. Postgres serves as the database for the storage and retrieval of user information. Node.js and express are the foundation of the server. Knex is used with a postgres driver to query the database. Bcryptjs is used to hash and compare user passwords. Cryptr is used for the encrypted storage and retrieval of passwords. User authentication is achieved through a JWT token.
 
 ## Live Demos
 
