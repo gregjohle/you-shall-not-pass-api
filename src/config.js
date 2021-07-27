@@ -5,4 +5,5 @@ module.exports = {
   TEST_DATABASE_URL:
     process.env.TEST_DATABASE_URL ||
     "postgresql://dunder_mifflin@localhost/you-shall-not-password-test",
+  JWT_SECRET: process.env.JWT_SECRET,
 };
