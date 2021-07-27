@@ -1,3 +1,6 @@
+const { token } = require("morgan");
+const { JWT_SECRET } = require("../config.js");
+
 const express = require("express"),
   path = require("path"),
   xss = require("xss"),
@@ -12,11 +15,11 @@ UsersRouter.route("/login").post((req, res, next) => {
   UsersService.getByEmail(req.app.get("db"), email).then((user) => {
     if (user === undefined) {
       return res.status(404).send("No User found.");
-    } else if (bcrypt.compareSync(password, user.password)) {
-      return res.status(200).json({
-        name: user.name,
-        email: user.email,
-        id: user.id,
+    } else if (UsersService.comparePasswords(password, user.password)) {
+      const sub = user.email;
+      const payload = { user_email: user.email };
+      return res.status(200).send({
+        authToken: UsersService.createJwt(sub, payload),
       });
     } else {
       return res.status(401).send("Invalid Password");

@@ -94,7 +94,7 @@ describe("Users Endpoints", () => {
           .expect(401, "Invalid Password");
       });
 
-      it("responds with user Data", () => {
+      it("responds with JWT", () => {
         const existingUser = {
           password: testUser[0].password,
           email: testUser[0].email,
